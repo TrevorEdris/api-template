@@ -1,8 +1,7 @@
 SHELL ?= /bin/bash
 export IMAGEORG ?= tedris
 export IMAGE ?= template-golang-kubernetes
-#export VERSION ?= $(shell printf "`./util/version`${VERSION_SUFFIX}") # TODO: Make a util repo
-export VERSION ?= $(shell cat VERSION)
+export VERSION ?= $(shell printf "`./util/version`${VERSION_SUFFIX}")
 export GIT_HASH =$(shell git rev-parse HEAD)
 export PROJECT_SLUG := ${IMAGEORG}-${IMAGE}
 
@@ -34,7 +33,7 @@ encrypt: ${encrypt_files}
 	@git submodule update --init --recursive || printf "\nWarning: Could not pull submodules\n"
 
 .PHONY: version
-version: submodules #util/version
+version: submodules util/version
 	@echo ${VERSION}
 
 # -----------------------------[ Build ]-----------------------------
