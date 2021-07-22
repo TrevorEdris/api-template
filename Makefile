@@ -55,7 +55,7 @@ test: build
 
 .PHONY: finalize
 finalize: test
-	@docker build -f container/Dockerfile -t ${IMAGEORG}/${IMAGE}:${VERSION}
+	@docker build -f container/Dockerfile -t ${IMAGEORG}/${IMAGE}:${VERSION} .
 	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${IMAGEORG}/${IMAGE}:latest
 
 .PHONY: publish_only

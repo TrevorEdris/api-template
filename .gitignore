@@ -18,3 +18,5 @@
 /.blackbox/secring.gpg
 /secrets/dev/some-secret-file
 /secrets/staging/some-secret-file
+/kube/deployment.yaml
+/kube/hpa.yaml
