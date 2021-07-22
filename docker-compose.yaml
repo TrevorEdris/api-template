@@ -1,0 +1,14 @@
+api:
+    image: tedris/template-golang-kubernetes:latest
+    container_name: api
+    ports:
+        - '8080:8080'
+
+dev:
+    image: golang:1.16
+    working_dir: /go/src/github.com/TrevorEdris/template-golang-kubernetes
+    entrypoint: bash
+    stdin_open: true
+    tty: true
+    volumes:
+        - ./:/go/src/github.com/TrevorEdris/template-golang-kubernetes

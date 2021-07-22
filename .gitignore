@@ -13,3 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+/.blackbox/pubring.gpg~
+/.blackbox/pubring.kbx~
+/.blackbox/secring.gpg
+/secrets/dev/some-secret-file
+/secrets/staging/some-secret-file
+/kube/deployment.yaml
+/kube/hpa.yaml
