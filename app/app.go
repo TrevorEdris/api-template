@@ -13,11 +13,13 @@ import (
 	"github.com/TrevorEdris/api-template/app/api"
 )
 
+// App is a wrapper around the server application.
 type App struct {
 	log    log15.Logger
 	server *http.Server
 }
 
+// New creates an instance of an App.
 func New(cfg ServerConfig, log log15.Logger) *App {
 	log.Info("Initializing application", "serverConfig", cfg)
 	return &App{

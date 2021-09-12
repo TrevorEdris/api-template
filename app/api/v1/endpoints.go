@@ -21,6 +21,7 @@ type errorResponse struct {
     Error string `json:"error"`
 }
 
+// New returns an instance of the V1 container.
 func New(logProvider util.LogProvider) *V1 {
     return &V1{logProvider}
 }

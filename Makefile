@@ -20,7 +20,7 @@ all: build
 
 .PHONY: help
 help: ## List of available commands
-	@awk 'BEGIN {FS = ":.*?##"} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1 $$2}' $(MAKEFILE_LIST)
+	@echo "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\033[36m\1\\033[m:\2/' | column -c2 -t -s :)"
 
 # -------------------------[ General Tools ]-------------------------
 
@@ -31,17 +31,18 @@ ${clear_files}: ${encrypt_files}
 	@blackbox_decrypt_all_files
 
 .PHONY: decrypt
-decrypt: ${clear_files}
+decrypt: ${clear_files} ## Decrypt all .gpg files registered in .blackbox/blackbox-files.txt
 
 .PHONY: encrypt
-encrypt: ${encrypt_files}
+encrypt: ${encrypt_files} ## Encrypt all files registered in .blackbox/blackbox-files.txt
 	blackbox_edit_end $^
 
 .PHONY: submodules
+submodules: ## Recursively init all submodules in the repo
 	@git submodule update --init --recursive || printf "\nWarning: Could not pull submodules\n"
 
 .PHONY: version
-version: submodules util/version
+version: submodules util/version ## Automatically calculate the version
 	@echo ${VERSION}
 
 # =========================[ Custom Targets ]========================
@@ -70,7 +71,7 @@ logs: ## Print logs in stdout
 # -----------------------------[ Build ]-----------------------------
 
 .PHONY: build
-build: decrypt submodules version
+build: decrypt submodules version ## Build and tag the docker container for the API
 	@docker build -f deployments/container/Dockerfile -t ${IMAGEORG}/${IMAGE}:${VERSION} --target builder .
 	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${IMAGEORG}/${IMAGE}:latest
 	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${IMAGEORG}/${IMAGE}-build:latest
@@ -78,31 +79,31 @@ build: decrypt submodules version
 # -----------------------------[ Test ]------------------------------
 
 .PHONY: test
-test: build
+test: build ## Run unit tests
 	@test/test_unit
 
 # -----------------------------[ Publish ]---------------------------
 
 .PHONY: finalize
-finalize: test
+finalize: test ## Build, test, and tag the docker container with the finalized tag (typically, the full docker registery will be tagged here)
 	@docker build -f container/Dockerfile -t ${IMAGEORG}/${IMAGE}:${VERSION} .
 	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${IMAGEORG}/${IMAGE}:latest
 
 .PHONY: publish_only
-publish_only:
+publish_only: ## Push the tagged docker image to the docker registry
 	@docker push ${IMAGEORG}/${IMAGE}:${VERSION}
 
 .PHONY: publish
-publish: finalize publish_only
+publish: finalize publish_only ## Finalize and publish the docker container
 
 # -----------------------------[ Deploy ]----------------------------
 
 .PHONY: deploy_only
-deploy_only: decrypt
+deploy_only: decrypt ## Fill out the .yaml.tmpl files and apply them to the specified namespace
 	@kube/deploy
 
 .PHONY: deploy
-deploy: publish deploy_only
+deploy: publish deploy_only ## Build, test, finalize, publish, and then deploy the docker container to kube
 
 # ----------------------------[ Release ]----------------------------
 # TODO

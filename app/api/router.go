@@ -21,6 +21,7 @@ type router struct {
     log log15.Logger
 }
 
+// NewRouter creates an instance of a router, returning the HTTP handler.
 func NewRouter(jwtIssuer string, log log15.Logger) http.Handler {
     router := &router{
         jwtIssuer: "TODO",
