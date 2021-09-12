@@ -20,3 +20,6 @@
 /secrets/staging/some-secret-file
 /kube/deployment.yaml
 /kube/hpa.yaml
+
+# Local env files
+.env
