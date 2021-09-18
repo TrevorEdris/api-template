@@ -18,8 +18,9 @@
 /.blackbox/secring.gpg
 /secrets/dev/some-secret-file
 /secrets/staging/some-secret-file
-/kube/deployment.yaml
-/kube/hpa.yaml
+/deployments/kube/deployment.yaml
+/deployments/kube/hpa.yaml
 
-# Local env files
+# Local files
 .env
+tmp

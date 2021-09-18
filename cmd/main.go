@@ -9,6 +9,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 
 	"github.com/TrevorEdris/api-template/app"
+	"github.com/TrevorEdris/api-template/somedatabase"
 )
 
 type configuration struct {
@@ -50,7 +51,10 @@ func main() {
     logHandler := log15.LvlFilterHandler(logLevel, log15.StreamHandler(os.Stdout, log15.JsonFormat()))
     log.SetHandler(logHandler)
 
+    // Create a connection to some database
+    someDBClient := somedatabase.NewSomeDatabaseClient("some_config")
+
     // Create the app
-    application := app.New(cfg.ServerConfig, log)
+    application := app.New(cfg.ServerConfig, log, &someDBClient)
     application.Run()
 }
