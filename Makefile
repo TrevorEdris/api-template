@@ -94,7 +94,8 @@ finalize: test ## Build, test, and tag the docker container with the finalized t
 
 .PHONY: publish-only
 publish-only: ## Push the tagged docker image to the docker registry
-	@docker push ${IMAGEORG}/${IMAGE}:${VERSION}
+	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${REGISTRY}${IMAGEORG}/${IMAGE}:${VERSION}
+	@docker push ${REGISTRY}${IMAGEORG}/${IMAGE}:${VERSION}
 
 .PHONY: publish
 publish: finalize publish-only ## Finalize and publish the docker container
