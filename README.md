@@ -47,6 +47,12 @@ See [https://github.com/cosmtrek/air](https://github.com/cosmtrek/air) for more 
 To configure parameters for the local instance of the API, copy the `sample.env` file into `.env`. The API uses [`joho/godotenv`](https://github.com/joho/godotenv) to read environment variables from this file and apply them to the container at runtime.
 Once the environment variables are set, the API will then parse the environment variables using [`joeshaw/envdecode`](https://github.com/joeshaw/envdecode).
 
+**Warning:** The `sample.env` file has values for `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. These are
+sensitive values that should _never_ be comitted to github. The provided [`blackbox`](https://github.com/StackExchange/blackbox) tool can be used to
+encrypt sensitive files using a GPG key, such as `secrets/<region>/some-secret-file.gpg`. Only users listed
+in `.blackbox/blackbox-admins.txt` whose GPG keys have been used to encrypt the listed `.gpg` files will
+be able to decrypt those files.
+
 ## SLO
 
 | Endpoint | Requests/s | p99  |
