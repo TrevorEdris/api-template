@@ -13,13 +13,11 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello World!")
 	c := services.NewContainer()
 	defer func() {
 		err := c.Shutdown()
 		if err != nil {
-			fmt.Printf("Error during shutdown: %v", err)
-			os.Exit(1)
+			c.Web.Logger.Fatalf("Error during shutdown: %v", err)
 		}
 	}()
 
@@ -47,6 +45,7 @@ func main() {
 			}
 		}
 
+		c.Web.Logger.Info("Starting HTTP server")
 		err := c.Web.StartServer(&srv)
 		if err != nil {
 			c.Web.Logger.Fatalf("failed to start server; shutting down: %v", err)
