@@ -11,6 +11,7 @@ import (
 	"github.com/TrevorEdris/api-template/app/services"
 )
 
+// BuildRouter builds the HTTP router for all endpoint handlers.
 func BuildRouter(c *services.Container) {
 	g := c.Web.Group("")
 

@@ -86,7 +86,7 @@ func (c *Container) initItemRepo() {
 	case config.StorageLocal:
 		c.ItemRepo = repository.NewItemRepoLocal()
 	case config.StorageDynamoDB:
-		// TODO: Create new dynamodb repo
+		c.ItemRepo = repository.NewItemRepoDynamoDB(c.Config)
 	default:
 		c.Web.Logger.Warnf("Invalid app storage (%s); defaulting to local storage", c.Config.App.Storage)
 		c.ItemRepo = repository.NewItemRepoLocal()

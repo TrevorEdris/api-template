@@ -2,7 +2,7 @@ SHELL ?= /bin/bash
 export REGISTRY ?= ${DOCKER_REGISTRY}
 export IMAGEORG ?= tedris
 export IMAGE ?= api-template
-export VERSION ?= $(shell printf "`./util/version`${VERSION_SUFFIX}")
+export VERSION ?= $(shell printf "`./tools/version`${VERSION_SUFFIX}")
 export GIT_HASH =$(shell git rev-parse --short HEAD)
 export DEV_DOCKER_COMPOSE ?= deployments/local/docker-compose.dev.yaml
 
@@ -42,7 +42,7 @@ submodules: ## Recursively init all submodules in the repo
 	@git submodule update --init --recursive || printf "\nWarning: Could not pull submodules\n"
 
 .PHONY: version
-version: submodules util/version ## Automatically calculate the version
+version: submodules tools/version ## Automatically calculate the version
 	@echo ${VERSION}
 
 # =========================[ Custom Targets ]========================

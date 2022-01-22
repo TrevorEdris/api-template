@@ -3,6 +3,9 @@ package repository
 import (
 	"context"
 
+	"github.com/TrevorEdris/api-template/app/config"
+	"github.com/TrevorEdris/api-template/app/internal/repository/dynamodb"
+	"github.com/TrevorEdris/api-template/app/internal/repository/local"
 	"github.com/TrevorEdris/api-template/app/model/item"
 )
 
@@ -16,3 +19,11 @@ type (
 		Delete(ctx context.Context, id string) error
 	}
 )
+
+func NewItemRepoLocal() *local.ItemRepo {
+	return local.NewItemRepo()
+}
+
+func NewItemRepoDynamoDB(cfg *config.Config) *dynamodb.ItemRepo {
+	return dynamodb.NewItemRepo(cfg)
+}

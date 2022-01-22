@@ -1,9 +1,12 @@
 package config
 
 import (
+	"context"
 	"os"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/joeshaw/envdecode"
 	"github.com/joho/godotenv"
 )
@@ -47,6 +50,7 @@ type (
 		App
 		HTTP
 		Metrics
+		AWS
 	}
 
 	// App defines the configs needed for the application itself.
@@ -78,6 +82,15 @@ type (
 		Addr    string `env:"METRICS_ADDRESS"`
 		BufLen  int    `env:"METRICS_BUFFER,default=5"`
 	}
+
+	// AWS defines the configs related to AWS services.
+	AWS struct {
+		AccessKeyID string `env:"AWS_ACCESS_KEY_ID"`
+		Secret      string `env:"AWS_SECRET_ACCESS_KEY"`
+		Region      string `env:"AWS_REGION"`
+		Endpoint    string `env:"AWS_ENDPOINT"`
+		AWSCfg      aws.Config
+	}
 )
 
 // New loads the configuration based on the environment variables.
@@ -95,5 +108,29 @@ func New() (Config, error) {
 		return Config{}, err
 	}
 
+	cfg.AWS.AWSCfg, err = loadAWSCfg(context.Background(), cfg)
+	if err != nil {
+		return Config{}, err
+	}
+
 	return cfg, nil
+}
+
+func loadAWSCfg(ctx context.Context, cfg Config) (aws.Config, error) {
+	customResolver := aws.EndpointResolverWithOptions(
+		aws.EndpointResolverWithOptionsFunc(
+			func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+				if cfg.AWS.Endpoint != "" {
+					return aws.Endpoint{
+						URL:           cfg.AWS.Endpoint,
+						SigningRegion: region,
+						Source:        aws.EndpointSourceCustom,
+					}, nil
+				}
+				// returning EndpointNotFoundError will allow the service to fallback to its default resolution
+				return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+			},
+		),
+	)
+	return awsconfig.LoadDefaultConfig(ctx, awsconfig.WithEndpointResolverWithOptions(customResolver))
 }
