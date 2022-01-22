@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/TrevorEdris/api-template/app/config"
+	"github.com/TrevorEdris/api-template/app/internal/repository"
 )
 
 type (
@@ -21,8 +22,11 @@ type (
 		// Validator stores the validator.
 		Validator *Validator
 
-		// Web stores the API framework
+		// Web stores the API framework.
 		Web *echo.Echo
+
+		// ItemRepo provides access to the Item storage medium.
+		ItemRepo repository.ItemRepo
 	}
 )
 
@@ -31,6 +35,7 @@ func NewContainer() *Container {
 	c.initConfig()
 	c.initValidator()
 	c.initWeb()
+	c.initItemRepo()
 	return c
 }
 
@@ -74,4 +79,16 @@ func (c *Container) initWeb() {
 	}
 
 	c.Web.Validator = c.Validator
+}
+
+func (c *Container) initItemRepo() {
+	switch c.Config.App.Storage {
+	case config.StorageLocal:
+		c.ItemRepo = repository.NewItemRepoLocal()
+	case config.StorageDynamoDB:
+		// TODO: Create new dynamodb repo
+	default:
+		c.Web.Logger.Warnf("Invalid app storage (%s); defaulting to local storage", c.Config.App.Storage)
+		c.ItemRepo = repository.NewItemRepoLocal()
+	}
 }
