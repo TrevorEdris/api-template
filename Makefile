@@ -1,10 +1,10 @@
 SHELL ?= /bin/bash
+export REGISTRY ?= ${DOCKER_REGISTRY}
 export IMAGEORG ?= tedris
-export IMAGE ?= template-golang-kubernetes
+export IMAGE ?= api-template
 export VERSION ?= $(shell printf "`./util/version`${VERSION_SUFFIX}")
-export GIT_HASH =$(shell git rev-parse HEAD)
-export PROJECT_SLUG := ${IMAGEORG}-${IMAGE}
-export DEV_DOCKER_COMPOSE=deployments/local/docker-compose.dev.yaml
+export GIT_HASH =$(shell git rev-parse --short HEAD)
+export DEV_DOCKER_COMPOSE ?= deployments/local/docker-compose.dev.yaml
 
 # Blackbox files that need to be decrypted.
 clear_files=$(shell blackbox_list_files)
@@ -51,22 +51,22 @@ version: submodules util/version ## Automatically calculate the version
 # ===================================================================
 
 # ---------------------------[ Local App ]---------------------------
-.PHONY: up
-up: ## Run the API locally and print logs to stdout
+.PHONY: dev
+dev: ## Run the API locally and print logs to stdout
 	docker-compose -f ${DEV_DOCKER_COMPOSE} up -d
-	make -s logs
+	make -s dev-logs
 
-.PHONY: down
-down: ## Stop all containers
+.PHONY: dev-down
+dev-down: ## Stop all containers
 	docker-compose -f ${DEV_DOCKER_COMPOSE} down
 
-.PHONY: restart
-restart: ## Restart all containers
+.PHONY: dev-restart
+dev-restart: ## Restart all containers
 	docker-compose -f ${DEV_DOCKER_COMPOSE} restart
 
-.PHONY: logs
-logs: ## Print logs in stdout
-	docker-compose -f ${DEV_DOCKER_COMPOSE} logs -f api
+.PHONY: dev-logs
+dev-logs: ## Print logs in stdout
+	docker-compose -f ${DEV_DOCKER_COMPOSE} logs -f app
 
 # -----------------------------[ Build ]-----------------------------
 
@@ -79,7 +79,10 @@ build: decrypt submodules version ## Build and tag the docker container for the 
 # -----------------------------[ Test ]------------------------------
 
 .PHONY: test
-test: build ## Run unit tests
+test: build test-unit ## Run full test suite
+
+.PHONY: test-unit
+test-unit: ## Run unit tests
 	@test/test_unit
 
 # -----------------------------[ Publish ]---------------------------
@@ -89,21 +92,29 @@ finalize: test ## Build, test, and tag the docker container with the finalized t
 	@docker build -f container/Dockerfile -t ${IMAGEORG}/${IMAGE}:${VERSION} .
 	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${IMAGEORG}/${IMAGE}:latest
 
-.PHONY: publish_only
-publish_only: ## Push the tagged docker image to the docker registry
+.PHONY: publish-only
+publish-only: ## Push the tagged docker image to the docker registry
 	@docker push ${IMAGEORG}/${IMAGE}:${VERSION}
 
 .PHONY: publish
-publish: finalize publish_only ## Finalize and publish the docker container
+publish: finalize publish-only ## Finalize and publish the docker container
 
 # -----------------------------[ Deploy ]----------------------------
 
-.PHONY: deploy_only
-deploy_only: decrypt ## Fill out the .yaml.tmpl files and apply them to the specified namespace
-	@kube/deploy
+.PHONY: kube-deploy-only
+kube-deploy-only: decrypt ## Fill out the .yaml.tmpl files and apply them to the specified namespace
+	@deployments/kube/deploy
 
-.PHONY: deploy
-deploy: publish deploy_only ## Build, test, finalize, publish, and then deploy the docker container to kube
+.PHONY: kube-deploy
+kube-deploy: publish kube-deploy-only ## Build, test, finalize, publish, and then deploy the docker container to kube
 
 # ----------------------------[ Release ]----------------------------
 # TODO
+
+# -----------------------------[ Other ] ----------------------------
+
+.PHONY: copy-binary
+copy-binary: build ## Create a temporary container based on the "-build" image and copy the binary out of the container
+	@docker create --name ${IMAGE}-${GIT_HASH} ${IMAGEORG}/${IMAGE}-build:${VERSION}
+	@docker cp ${IMAGE}-${GIT_HASH}:/src/the-binary ./the-binary
+	@docker rm ${IMAGE}-${GIT_HASH}

@@ -1,11 +1,11 @@
 version: "3.8"
 
 services:
-  api:
+  app:
     build:
       context: ${PWD}
       dockerfile: ./deployments/container/dev.Dockerfile
-    container_name: api
+    container_name: app
     environment:
       - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
     volumes:
@@ -17,7 +17,7 @@ services:
         target: /run/host-services/ssh-auth.sock
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8000:8000"
     networks:
       local-network:
         ipv4_address: 172.10.0.2
