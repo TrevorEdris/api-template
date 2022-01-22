@@ -3,9 +3,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GoT](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](https://go.dev)
 
-# api-template
+# API Template
 
-Template repo used for the ease of creation of API's utilizing Golang, with Kubernetes for deployment.
+This project provides an easy to modify template for an API using the labstack/echo framework.
+The Repository code pattern is used for data access, making the API highly flexible for whatever
+storage solution is necessary.
+
+**Note:** A significant portion of the code has been slightly modified based on [mikestefanello/pagoda](https://github.com/mikestefanello/pagoda). 
 
 ## Local Development
 
