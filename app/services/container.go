@@ -84,8 +84,10 @@ func (c *Container) initWeb() {
 func (c *Container) initItemRepo() {
 	switch c.Config.App.Storage {
 	case config.StorageLocal:
+		c.Web.Logger.Info("Configured for local storage")
 		c.ItemRepo = repository.NewItemRepoLocal()
 	case config.StorageDynamoDB:
+		c.Web.Logger.Info("Configured for DynamoDB storage")
 		c.ItemRepo = repository.NewItemRepoDynamoDB(c.Config)
 	default:
 		c.Web.Logger.Warnf("Invalid app storage (%s); defaulting to local storage", c.Config.App.Storage)

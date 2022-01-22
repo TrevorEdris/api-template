@@ -51,6 +51,7 @@ type (
 		HTTP
 		Metrics
 		AWS
+		DynamoDB
 	}
 
 	// App defines the configs needed for the application itself.
@@ -90,6 +91,11 @@ type (
 		Region      string `env:"AWS_REGION"`
 		Endpoint    string `env:"AWS_ENDPOINT"`
 		AWSCfg      aws.Config
+	}
+
+	// DynamoDB defines the configs related specfically to the DynamoDB service.
+	DynamoDB struct {
+		ItemTable string `env:"DYNAMODB_ITEM_TABLE"`
 	}
 )
 

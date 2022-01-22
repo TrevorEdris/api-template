@@ -19,16 +19,16 @@ aws dynamodb create-table --endpoint-url ${DYNAMODB_ENDPOINT} \
 echo "Populating table"
 # Required fields: id, name, description
 base_id="fadd2e37-3c27-44e8-b5e3-821b21b" # Random UUID minus the last 5 characters
-base_name="Item_"
+base_title="Item_"
 base_desc="Desc_"
 for i in $(seq 1 1 ${record_count}); do
     id=$(printf "%s%05d" ${base_id} ${i})
-    name=$(printf "%s%05d" ${base_name} ${i})
+    title=$(printf "%s%05d" ${base_title} ${i})
     desc=$(printf "%s%05d" ${base_desc} ${i})
-    echo "${id} - ${name} - ${desc}"
+    echo "${id} - ${title} - ${desc}"
     aws dynamodb put-item --endpoint-url ${DYNAMODB_ENDPOINT} \
         --table-name ${ITEM_TABLE} \
-        --item "{\"id\": {\"S\": \"${id}\"}, \"name\": {\"S\": \"${name}\"}, \"description\": {\"S\": \"${desc}\"}}"
+        --item "{\"id\": {\"S\": \"${id}\"}, \"title\": {\"S\": \"${title}\"}, \"description\": {\"S\": \"${desc}\"}}"
 done
 
 echo "Finished populating all data"

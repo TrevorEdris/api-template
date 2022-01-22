@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/aws/aws-sdk-go-v2 v1.13.0
 	github.com/aws/aws-sdk-go-v2/config v1.13.0
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.6.0
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.13.0
 	github.com/brpaz/echozap v1.1.2
 	github.com/go-playground/validator/v10 v10.10.0
@@ -21,6 +22,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.4 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.2.0 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.11.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.7.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.5.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.7.0 // indirect

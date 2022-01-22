@@ -36,3 +36,16 @@ func New(id, name, description string, price float64) Model {
 		calculatedField: fmt.Sprintf("%02f:%s", price, id),
 	}
 }
+
+func (m *Model) Update(updates Model) {
+	if updates.Name != "" {
+		m.Name = updates.Name
+	}
+	if updates.Description != "" {
+		m.Description = updates.Description
+	}
+	if updates.Price >= 0 {
+		m.Price = updates.Price
+		m.calculatedField = fmt.Sprintf("%02f:%s", m.Price, m.ID)
+	}
+}
