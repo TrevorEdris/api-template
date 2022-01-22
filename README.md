@@ -1,3 +1,8 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/TrevorEdris/api-template)](https://goreportcard.com/report/github.com/TrevorEdris/api-template)
+![CodeQL](https://github.com/TrevorEdris/api-template/workflows/CodeQL/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GoT](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](https://go.dev)
+
 # api-template
 
 Template repo used for the ease of creation of API's utilizing Golang, with Kubernetes for deployment.
@@ -33,70 +38,53 @@ See [https://github.com/cosmtrek/air](https://github.com/cosmtrek/air) for more 
 ### Configuration
 
 To configure parameters for the local instance of the API, copy the `sample.env` file into `.env`. The API uses [`joho/godotenv`](https://github.com/joho/godotenv) to read environment variables from this file and apply them to the container at runtime.
-Once the environment variables are set, the API will then parse the environment variables using [`kelseyhightower/envconfig`](https://github.com/kelseyhightower/envconfig).
+Once the environment variables are set, the API will then parse the environment variables using [`joeshaw/envdecode`](https://github.com/joeshaw/envdecode).
 
 ## SLO
 
-| Endpoint | Requests/s | 95%  |
+| Endpoint | Requests/s | p99  |
 |---|---|---|
-| `/v1/health` | ??? | ???ms |
-| `/v1/generalkenobi` | ??? | ???ms |
+| `GET /` | 100 | 1ms |
+| `GET /item/:id` | 100 | 10ms |
+| `POST /item` | 100 | 15ms |
+| `PUT /item/:id` | 100 | 15ms |
+| `DELETE /item/:id` | 100 | 10ms |
 
 ## Data Model
 
-N/A
+### Local
+
+Local storage consists of a `map[string]item.Model`, where `item.Model` is defined in `./app/model/item/model.go`.
+
+### DynamoDB
+
+DynamoDB storage consists of a single table, `items`, with the following definition:
+
+```json
+{
+    "TableName": "items",
+    "AttributeDefinitions": [
+        {
+            "Attributename": "id",
+            "AttributeType": "S"
+        }
+    ],
+    "KeySchema": [
+        {
+            "KeyType": "HASH",
+            "AttributeName": "id"
+        }
+    ],
+}
+```
 
 ## Authentication
 
-Authentication of requests is performed by validating the JWT provided in the HTTP Request headers.
-
-```json
-{"Authorization": "Bearer <JWT_HERE>"}
-```
+TODO: Impelement authentication
 
 ## Endpoints
 
-### GET `/v1/health`
-
-Perform a health-check, ensuring that all necessary components (3rd party dependencies, databases, etc.) are available and operational.
-
-#### Request Body
-
-N/A
-
-#### Response Body
-
-```json
-{
-    "msg": "Healthy"
-}
-```
-
-#### Error Codes
-
-* `401 Unauthorized`: Invalid credentials were provided in the request
-* `500 Internal Error`: The health check failed for some reason
-
-### GET `/v1/generalkenobi`
-
-A sample endpoint that simply responds as if General Kenobi met General Grevious.
-
-#### Request Body
-
-N/A
-
-#### Response Body
-
-```json
-{
-    "msg": "Hello there."
-}
-```
-
-#### Error Codes
-
-* `401 Unauthorized`: Invalid credentials were provided in the request
-* `500 Internal Error`: General Kenobi was killed by Order 66
+TODO: Create auto-generated OpenAPI definition
 
 ## Deployment Procedure
 
@@ -145,10 +133,3 @@ _Do any API keys need rotated frequently? Does any data need to be deleted at so
 The following is a list of all 3rd party libraries in use by this API
 
 * _TODO_
-
-## TODO
-
-- [ ] Implement JWT auth
-- [ ] Fix live-reload crash on API crash
-- [ ] Ensure kube deployment works properly
-- [ ] List of 3rd party libraries
