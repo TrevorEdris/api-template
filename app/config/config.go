@@ -45,6 +45,8 @@ type (
 	// Config is the aggregation of all necessary configurations.
 	Config struct {
 		App
+		HTTP
+		Metrics
 	}
 
 	// App defines the configs needed for the application itself.
@@ -54,6 +56,27 @@ type (
 		LogLevel    LogLevel      `env:"LOG_LEVEL,default=info"`
 		Timeout     time.Duration `env:"APP_TIMEOUT,default=20s"`
 		Storage     Storage       `env:"APP_STORAGE,default=local"`
+	}
+
+	// HTTP stores the configuration for the HTTP server.
+	HTTP struct {
+		Hostname     string        `env:"HTTP_HOSTNAME,default=0.0.0.0"`
+		Port         uint16        `env:"HTTP_PORT,default=8000"`
+		ReadTimeout  time.Duration `env:"HTTP_READ_TIMEOUT,default=5s"`
+		WriteTimeout time.Duration `env:"HTTP_WRITE_TIMEOUT,default=10s"`
+		IdleTimeout  time.Duration `env:"HTTP_IDLE_TIMEOUT,default=2m"`
+		TLS          struct {
+			Enabled     bool   `env:"HTTP_TLS_ENABLED,default=false"`
+			Certificate string `env:"HTTP_TLS_CERTIFICATE"`
+			Key         string `env:"HTTP_TLS_KEY"`
+		}
+	}
+
+	// Metrics defines the configs needed for collecting metrics.
+	Metrics struct {
+		Enabled bool   `env:"METRICS_ENABLED,default=false"`
+		Addr    string `env:"METRICS_ADDRESS"`
+		BufLen  int    `env:"METRICS_BUFFER,default=5"`
 	}
 )
 

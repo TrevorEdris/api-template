@@ -24,3 +24,4 @@
 # Local files
 .env
 tmp
+vendor
