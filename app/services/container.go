@@ -46,7 +46,7 @@ func (c *Container) Shutdown() error {
 func (c *Container) initConfig() {
 	cfg, err := config.New()
 	if err != nil {
-		panic(fmt.Sprintf("failed to load config: %w", err))
+		panic(fmt.Errorf("failed to load config: %w", err))
 	}
 	c.Config = &cfg
 }

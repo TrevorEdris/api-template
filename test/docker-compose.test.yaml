@@ -1,9 +1,13 @@
-test:
-    image: tedris/template-golang-kubernetes:latest
-    container_name: unit_tests
-    environment:
-        - LOG_LEVEL=debug
-    entrypoint:
-        - go
-        - test
-        - ./...
+version: '3'
+services:
+    test:
+        image: ${IMAGEORG}/${IMAGE}-build:latest
+        container_name: unit_tests
+        environment:
+            - LOG_LEVEL=debug
+        entrypoint:
+            - go
+            - test
+            - -v
+            - -tags=unit
+            - ./...
