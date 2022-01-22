@@ -39,6 +39,7 @@ type (
 )
 
 func (c Item) Get(ctx echo.Context) error {
+	ctx.Logger().Debug("Processing GET request")
 	resp := controller.NewJSONResponse(ctx)
 	resp.StatusCode = http.StatusOK
 
@@ -59,6 +60,7 @@ func (c Item) Get(ctx echo.Context) error {
 }
 
 func (c Item) Post(ctx echo.Context) error {
+	ctx.Logger().Debug("Processing POST request")
 	resp := controller.NewJSONResponse(ctx)
 	resp.StatusCode = http.StatusCreated
 
@@ -84,6 +86,7 @@ func (c Item) Post(ctx echo.Context) error {
 }
 
 func (c Item) Put(ctx echo.Context) error {
+	ctx.Logger().Debug("Processing PUT request")
 	resp := controller.NewJSONResponse(ctx)
 	resp.StatusCode = http.StatusCreated
 
@@ -110,6 +113,7 @@ func (c Item) Put(ctx echo.Context) error {
 }
 
 func (c Item) Delete(ctx echo.Context) error {
+	ctx.Logger().Debug("Processing DELETE request")
 	resp := controller.NewJSONResponse(ctx)
 	resp.StatusCode = http.StatusNoContent
 

@@ -25,15 +25,18 @@ The above commands use `deployments/local/docker-compose.dev.yaml` to run the AP
 when a change to one of the source `.go` files is detected (configurable in `.air.toml`).
 
 ```bash
-api    | app/api/v1/endpoints.go has changed
-api    | building...
-api    | running...
-api    | {"lvl":"info","module":"api-template","msg":"Initializing application","serverConfig":{"Port":8080,"ReadTimeout":5,"WriteTimeout":10,"IdleTimeout":120,"JwtIssuer":"/opt/tedris/jwt/priv.pem"},"t":"2021-09-12T23:02:16.5528522Z"}
+app               |    ____    __
+app               |   / __/___/ /  ___
+app               |  / _// __/ _ \/ _ \
+app               | /___/\__/_//_/\___/ v4.6.3
+app               | High performance, minimalist Go web framework
+app               | https://echo.labstack.com
+app               | ____________________________________O/_______
+app               |                                     O\
+app               | ⇨ http server started on [::]:8000
 ```
 
 See [https://github.com/cosmtrek/air](https://github.com/cosmtrek/air) for more details.
-
-**Note:** The live-reload feature of `cosmtrek/air` only works for go files.
 
 ### Configuration
 
@@ -44,17 +47,17 @@ Once the environment variables are set, the API will then parse the environment 
 
 | Endpoint | Requests/s | p99  |
 |---|---|---|
-| `GET /` | 100 | 1ms |
-| `GET /item/:id` | 100 | 10ms |
-| `POST /item` | 100 | 15ms |
-| `PUT /item/:id` | 100 | 15ms |
-| `DELETE /item/:id` | 100 | 10ms |
+| `GET /` | 20000 | 5ms |
+| `GET /item/:id` | 20000 | 5ms |
+| `POST /item` | 20000 | 5ms |
+| `PUT /item/:id` | 20000 | 5ms |
+| `DELETE /item/:id` | 20000 | 5ms |
 
 ## Data Model
 
 ### Local
 
-Local storage consists of a `map[string]item.Model`, where `item.Model` is defined in `./app/model/item/model.go`.
+Local storage consists of a `sync.Map`, where the key is a string and the value is an `item.Model`, defined in `./app/model/item/model.go`.
 
 ### DynamoDB
 

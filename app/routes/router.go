@@ -40,8 +40,8 @@ func BuildRouter(c *services.Container) {
 	defaultRoutes(c, g, ctr)
 
 	// Create a group of routes where the json content type is enforced
-	jsonGroup := g.Group("", middleware.EnforceContentType(middleware.JSON))
-	itemRoutes(c, jsonGroup, ctr)
+	itemGroup := g.Group("/item", middleware.EnforceContentType(middleware.JSON))
+	itemRoutes(c, itemGroup, ctr)
 }
 
 func defaultRoutes(c *services.Container, g *echo.Group, ctr controller.Controller) {
@@ -51,8 +51,8 @@ func defaultRoutes(c *services.Container, g *echo.Group, ctr controller.Controll
 
 func itemRoutes(c *services.Container, g *echo.Group, ctr controller.Controller) {
 	item := Item{Controller: ctr}
-	g.GET("/item/:id", item.Get).Name = "itemget"
-	g.POST("/item", item.Post).Name = "itempost"
-	g.PUT("/item/:id", item.Put).Name = "itemput"
-	g.DELETE("/item/:id", item.Delete).Name = "itemdelete"
+	g.GET("/:id", item.Get).Name = "itemget"
+	g.POST("", item.Post).Name = "itempost"
+	g.PUT("/:id", item.Put).Name = "itemput"
+	g.DELETE("/:id", item.Delete).Name = "itemdelete"
 }
