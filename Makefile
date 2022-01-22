@@ -52,7 +52,7 @@ version: submodules tools/version ## Automatically calculate the version
 
 # ---------------------------[ Local App ]---------------------------
 .PHONY: dev
-dev: ## Run the API locally and print logs to stdout
+dev: build-populate ## Run the API locally and print logs to stdout
 	docker-compose -f ${DEV_DOCKER_COMPOSE} up -d
 	make -s dev-logs
 
@@ -66,15 +66,19 @@ dev-restart: ## Restart all containers
 
 .PHONY: dev-logs
 dev-logs: ## Print logs in stdout
-	docker-compose -f ${DEV_DOCKER_COMPOSE} logs -f app
+	docker-compose -f ${DEV_DOCKER_COMPOSE} logs -f app populate
 
 # -----------------------------[ Build ]-----------------------------
 
 .PHONY: build
-build: decrypt submodules version ## Build and tag the docker container for the API
+build: submodules version ## Build and tag the docker container for the API
 	@docker build -f deployments/container/Dockerfile -t ${IMAGEORG}/${IMAGE}:${VERSION} --target builder .
 	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${IMAGEORG}/${IMAGE}:latest
 	@docker tag ${IMAGEORG}/${IMAGE}:${VERSION} ${IMAGEORG}/${IMAGE}-build:latest
+
+.PHONY: build-populate
+build-populate: ## Build and tag the container that populates data for the local dev environment
+	@docker build -f deployments/container/populate.Dockerfile -t ${IMAGEORG}/${IMAGE}-populate:latest .
 
 # -----------------------------[ Test ]------------------------------
 

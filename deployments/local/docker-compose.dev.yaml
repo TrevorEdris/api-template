@@ -56,6 +56,23 @@ services:
       local-network:
         ipv4_address: 172.10.0.4
 
+  populate:
+    image: ${IMAGEORG}/${IMAGE}-populate:latest
+    container_name: populate
+    user: root
+    environment:
+      DYNAMODB_ENDPOINT: http://localstack:4566
+      AWS_ACCESS_KEY_ID: local
+      AWS_SECRET_ACCESS_KEY: local
+      AWS_REGION: us-east-1
+      ITEM_TABLE: items
+      RECORD_COUNT: 175
+    depends_on:
+      - localstack
+    networks:
+      local-network:
+        ipv4_address: 172.10.0.5
+
 networks:
   local-network:
     name: "local-network"
