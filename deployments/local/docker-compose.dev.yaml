@@ -9,8 +9,6 @@ services:
     environment:
       - SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock
     volumes:
-      - ${PWD}/secrets/dev/pub.pem:/opt/tedris/jwt/pub.pem
-      - ${PWD}/secrets/dev/priv.pem:/opt/tedris/jwt/priv.pem
       - ${PWD}/:/app
       - type: bind
         source: /run/host-services/ssh-auth.sock
