@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.13.0
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.6.0
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.13.0
+	github.com/brianvoe/gofakeit/v6 v6.14.5
 	github.com/brpaz/echozap v1.1.2
 	github.com/go-playground/validator/v10 v10.10.0
 	github.com/golang/mock v1.6.0

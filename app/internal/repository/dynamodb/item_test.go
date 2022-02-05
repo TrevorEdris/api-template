@@ -6,16 +6,20 @@ package dynamodb
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/TrevorEdris/api-template/app/config"
+	"github.com/TrevorEdris/api-template/app/model/item"
 )
 
 type itemSuite struct {
@@ -43,7 +47,7 @@ func (s *itemSuite) TearDownTest() {
 	s.ctrl.Finish()
 }
 
-func (s *itemSuite) TestItem_GetItem_NotFound() {
+func (s *itemSuite) TestItem_GetItem_Error() {
 	testID := "1234"
 	testErr := errors.New("GetItem error")
 	s.mockDDB.EXPECT().GetItem(gomock.Any(), &dynamodb.GetItemInput{
@@ -54,4 +58,45 @@ func (s *itemSuite) TestItem_GetItem_NotFound() {
 	result, err := s.storage.Get(context.Background(), testID)
 	assert.ErrorIs(s.T(), err, testErr)
 	assert.Empty(s.T(), result)
+}
+
+func (s *itemSuite) TestItem_GetItem_NotFound() {
+	testID := "1234"
+	s.mockDDB.EXPECT().GetItem(gomock.Any(), &dynamodb.GetItemInput{
+		Key:       map[string]types.AttributeValue{"id": &types.AttributeValueMemberS{Value: testID}},
+		TableName: aws.String(s.storage.table),
+	}).Return(&dynamodb.GetItemOutput{
+		Item: nil,
+	}, nil)
+
+	_, err := s.storage.Get(context.Background(), testID)
+	assert.ErrorIs(s.T(), err, item.ErrItemNotFound)
+}
+
+func (s *itemSuite) TestItem_GetItem() {
+	expectedItem := item.Model{
+		ID:          "1234",
+		Name:        gofakeit.Noun(),
+		Description: gofakeit.Sentence(42), // Random dice roll decided the length
+		Price:       gofakeit.Price(0.0, 13.37),
+	}
+
+	s.mockDDB.EXPECT().GetItem(gomock.Any(), &dynamodb.GetItemInput{
+		Key:       map[string]types.AttributeValue{"id": &types.AttributeValueMemberS{Value: expectedItem.ID}},
+		TableName: aws.String(s.storage.table),
+	}).Return(&dynamodb.GetItemOutput{
+		Item: map[string]types.AttributeValue{
+			"id":          &types.AttributeValueMemberS{Value: expectedItem.ID},
+			"title":       &types.AttributeValueMemberS{Value: expectedItem.Name},
+			"description": &types.AttributeValueMemberS{Value: expectedItem.Description},
+			"price":       &types.AttributeValueMemberN{Value: fmt.Sprintf("%f", expectedItem.Price)},
+		},
+	}, nil)
+
+	result, err := s.storage.Get(context.Background(), expectedItem.ID)
+	require.NoError(s.T(), err)
+	assert.Equal(s.T(), expectedItem.ID, result.ID)
+	assert.Equal(s.T(), expectedItem.Name, result.Name)
+	assert.Equal(s.T(), expectedItem.Description, result.Description)
+	assert.Equal(s.T(), expectedItem.Price, result.Price)
 }
