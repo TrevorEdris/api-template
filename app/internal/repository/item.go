@@ -24,6 +24,6 @@ func NewItemRepoLocal() *local.ItemRepo {
 	return local.NewItemRepo()
 }
 
-func NewItemRepoDynamoDB(cfg *config.Config) *dynamodb.ItemRepo {
-	return dynamodb.NewItemRepo(cfg)
+func NewItemRepoDynamoDB(cfg *config.Config, driver dynamodb.DynamodbClient) *dynamodb.ItemRepo {
+	return dynamodb.NewItemRepo(cfg, driver)
 }

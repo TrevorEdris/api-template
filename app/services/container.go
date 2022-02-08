@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/brpaz/echozap"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -88,7 +89,7 @@ func (c *Container) initItemRepo() {
 		c.ItemRepo = repository.NewItemRepoLocal()
 	case config.StorageDynamoDB:
 		c.Web.Logger.Info("Configured for DynamoDB storage")
-		c.ItemRepo = repository.NewItemRepoDynamoDB(c.Config)
+		c.ItemRepo = repository.NewItemRepoDynamoDB(c.Config, dynamodb.NewFromConfig(c.Config.AWSCfg))
 	default:
 		c.Web.Logger.Warnf("Invalid app storage (%s); defaulting to local storage", c.Config.App.Storage)
 		c.ItemRepo = repository.NewItemRepoLocal()

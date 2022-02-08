@@ -15,7 +15,7 @@ import (
 
 type (
 	ItemRepo struct {
-		storage *dynamodb.Client
+		storage DynamodbClient
 		table   string
 	}
 
@@ -27,9 +27,9 @@ type (
 	}
 )
 
-func NewItemRepo(cfg *config.Config) *ItemRepo {
+func NewItemRepo(cfg *config.Config, driver DynamodbClient) *ItemRepo {
 	return &ItemRepo{
-		storage: dynamodb.NewFromConfig(cfg.AWS.AWSCfg),
+		storage: driver,
 		table:   cfg.DynamoDB.ItemTable,
 	}
 }
