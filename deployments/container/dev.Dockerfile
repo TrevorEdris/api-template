@@ -2,7 +2,7 @@ FROM golang:1.19-alpine
 
 RUN apk update && apk add --no-cache musl-dev gcc git build-base
 
-RUN go get github.com/cosmtrek/air
+RUN go install github.com/cosmtrek/air@latest
 
 WORKDIR /app
 

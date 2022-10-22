@@ -55,6 +55,6 @@ services:
       AWS_SECRET_ACCESS_KEY: local
       AWS_REGION: us-east-1
       ITEM_TABLE: items
-      RECORD_COUNT: 175
+      RECORD_COUNT: 5
     depends_on:
       - localstack
