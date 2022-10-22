@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/TrevorEdris/api-template/app/controller"
-	"github.com/TrevorEdris/api-template/app/model/item"
+	"github.com/TrevorEdris/api-template/app/domain"
 )
 
 type (
@@ -29,7 +29,7 @@ type (
 		Price       float64 `json:"price"`
 	}
 
-	// ItemJSONResponse defines the HTTP response body of a request which returns an item.Model.
+	// ItemJSONResponse defines the HTTP response body of a request which returns an domain.Item.
 	itemJSONResponse struct {
 		ID          string  `json:"id"`
 		Name        string  `json:"name"`
@@ -38,6 +38,7 @@ type (
 	}
 )
 
+// Get attempts to fetch the item identified by the id parameter.
 func (c Item) Get(ctx echo.Context) error {
 	ctx.Logger().Debug("Processing GET request")
 	resp := controller.NewJSONResponse(ctx)
@@ -47,7 +48,7 @@ func (c Item) Get(ctx echo.Context) error {
 	it, err := c.Container.ItemRepo.Get(ctx.Request().Context(), id)
 	if err != nil {
 		switch err {
-		case item.ErrItemNotFound:
+		case domain.ErrItemNotFound:
 			return c.RenderErrorResponse(ctx, http.StatusNotFound, err, "item (id="+id+") not found")
 		default:
 			return c.RenderErrorResponse(ctx, http.StatusInternalServerError, err, "failed to get item")
@@ -59,6 +60,7 @@ func (c Item) Get(ctx echo.Context) error {
 	return c.RenderJSONResponse(ctx, resp)
 }
 
+// Post attempts to create a new Item.
 func (c Item) Post(ctx echo.Context) error {
 	ctx.Logger().Debug("Processing POST request")
 	resp := controller.NewJSONResponse(ctx)
@@ -85,6 +87,7 @@ func (c Item) Post(ctx echo.Context) error {
 	return c.RenderJSONResponse(ctx, resp)
 }
 
+// Put attempts to update an existing item.
 func (c Item) Put(ctx echo.Context) error {
 	ctx.Logger().Debug("Processing PUT request")
 	resp := controller.NewJSONResponse(ctx)
@@ -112,6 +115,7 @@ func (c Item) Put(ctx echo.Context) error {
 	return c.RenderJSONResponse(ctx, resp)
 }
 
+// Delete attempts to delete the specified item.
 func (c Item) Delete(ctx echo.Context) error {
 	ctx.Logger().Debug("Processing DELETE request")
 	resp := controller.NewJSONResponse(ctx)
@@ -121,7 +125,7 @@ func (c Item) Delete(ctx echo.Context) error {
 	err := c.Container.ItemRepo.Delete(ctx.Request().Context(), id)
 	if err != nil {
 		switch err {
-		case item.ErrItemNotFound:
+		case domain.ErrItemNotFound:
 			return c.RenderErrorResponse(ctx, http.StatusNotFound, err, "item (id="+id+") not found")
 		default:
 			return c.RenderErrorResponse(ctx, http.StatusInternalServerError, err, "failed to delete item")
@@ -131,15 +135,15 @@ func (c Item) Delete(ctx echo.Context) error {
 	return c.RenderJSONResponse(ctx, resp)
 }
 
-func itemPostRequestToModel(ipr *itemPostRequest) item.Model {
-	return item.New("", ipr.Name, ipr.Description, ipr.Price)
+func itemPostRequestToModel(ipr *itemPostRequest) domain.Item {
+	return domain.NewItem("", ipr.Name, ipr.Description, ipr.Price)
 }
 
-func itemPutRequestToModel(ipr *itemPutRequest) item.Model {
-	return item.New("", ipr.Name, ipr.Description, ipr.Price)
+func itemPutRequestToModel(ipr *itemPutRequest) domain.Item {
+	return domain.NewItem("", ipr.Name, ipr.Description, ipr.Price)
 }
 
-func modelToItemJSONResponse(m item.Model) itemJSONResponse {
+func modelToItemJSONResponse(m domain.Item) itemJSONResponse {
 	return itemJSONResponse{
 		ID:          m.ID,
 		Name:        m.Name,

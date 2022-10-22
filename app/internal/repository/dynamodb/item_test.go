@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/TrevorEdris/api-template/app/config"
-	"github.com/TrevorEdris/api-template/app/model/item"
+	"github.com/TrevorEdris/api-template/app/domain"
 )
 
 type itemSuite struct {
@@ -70,11 +70,11 @@ func (s *itemSuite) TestItem_GetItem_NotFound() {
 	}, nil)
 
 	_, err := s.storage.Get(context.Background(), testID)
-	assert.ErrorIs(s.T(), err, item.ErrItemNotFound)
+	assert.ErrorIs(s.T(), err, domain.ErrItemNotFound)
 }
 
 func (s *itemSuite) TestItem_GetItem() {
-	expectedItem := item.Model{
+	expectedItem := domain.Item{
 		ID:          "1234",
 		Name:        gofakeit.Noun(),
 		Description: gofakeit.Sentence(42), // Random dice roll decided the length

@@ -14,6 +14,7 @@ var (
 	SomeCustomKey ContextKey = "a_key_to_store_in_ctx"
 )
 
+// IsCancelledError determines if the specified error is an instance of context.Cancelled.
 func IsCanceledError(err error) bool {
 	return errors.Is(err, context.Canceled)
 }

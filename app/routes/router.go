@@ -49,6 +49,9 @@ func defaultRoutes(c *services.Container, g *echo.Group, ctr controller.Controll
 	g.GET("/", hello.Get).Name = "helloworld"
 }
 
+// itemRoutes defines the mapping for the Item-related handlers.
+// Example
+// GET http://localhost:8080/item/1234 --> maps to the item.Get function.
 func itemRoutes(c *services.Container, g *echo.Group, ctr controller.Controller) {
 	item := Item{Controller: ctr}
 	g.GET("/:id", item.Get).Name = "itemget"
