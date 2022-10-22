@@ -44,12 +44,13 @@ func BuildRouter(c *services.Container) {
 	itemRoutes(c, itemGroup, ctr)
 }
 
-// TODO: Add profiling
 // TODO: Add /health, /ready
 // TODO: Add OpenTelemetry wrappers
 func defaultRoutes(c *services.Container, g *echo.Group, ctr controller.Controller) {
 	hello := Hello{Controller: ctr}
 	g.GET("/", hello.Get).Name = "helloworld"
+	// TODO: Consider changing names. This was previously contained in a package, so "Wrap" is now ambigious.
+	Wrap(c.Web)
 }
 
 // itemRoutes defines the mapping for the Item-related handlers.
