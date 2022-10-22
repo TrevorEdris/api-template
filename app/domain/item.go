@@ -1,4 +1,4 @@
-package item
+package domain
 
 import (
 	"errors"
@@ -11,13 +11,13 @@ var (
 )
 
 type (
-	// Model defines the domain model of an Item. This is the struct that will be
+	// Item defines the domain model of an Item. This is the struct that will be
 	// used for all business logic. The struct has no annotations because the
 	// way the model is rendered to some medium such as an HTTP response, database,
 	// queue, etc. should be completely independent of the actual struct used by
 	// the business logic functions. The way the item is rendered should be left
 	// up to the package performing the rendering.
-	Model struct {
+	Item struct {
 		ID              string
 		Name            string
 		Description     string
@@ -26,9 +26,9 @@ type (
 	}
 )
 
-// New creates a new Model.
-func New(id, name, description string, price float64) Model {
-	return Model{
+// NewItem creates a new Item struct.
+func NewItem(id, name, description string, price float64) Item {
+	return Item{
 		ID:              id,
 		Name:            name,
 		Description:     description,
@@ -37,7 +37,7 @@ func New(id, name, description string, price float64) Model {
 	}
 }
 
-func (m *Model) Update(updates Model) {
+func (m *Item) Update(updates Item) {
 	if updates.Name != "" {
 		m.Name = updates.Name
 	}

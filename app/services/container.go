@@ -31,6 +31,7 @@ type (
 	}
 )
 
+// NewContainer creates an instance of the Container struct with each of it's components initialized.
 func NewContainer() *Container {
 	c := new(Container)
 	c.initConfig()
@@ -40,6 +41,7 @@ func NewContainer() *Container {
 	return c
 }
 
+// Shutdown safetly shuts down all services within the container.
 func (c *Container) Shutdown() error {
 	return nil
 }

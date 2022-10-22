@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: template-golang-kubernetes
+  name: api-template
   labels:
-    component: template-golang-kubernetes
+    component: api-template
 spec:
   replicas: MIN_REPLICAS_VALUE
   minReadySeconds: 10
@@ -15,15 +15,15 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      component: template-golang-kubernetes
+      component: api-template
   template:
     metadata:
       labels:
-        component: template-golang-kubernetes
+        component: api-template
     spec:
       containers:
-      - name: template-golang-kubernetes
-        image: tedris/template-golang-kubernetes:VERSION_VALUE
+      - name: api-template
+        image: tedris/api-template:VERSION_VALUE
         imagePullPolicy: Always
         resources:
           limits:
@@ -39,3 +39,22 @@ spec:
               secretKeyRef:
                 name: some-secret-file
                 key: some_variable
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-template
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-template
+  minReplicas: MIN_REPLICAS_VALUE
+  maxReplicas: MAX_REPLICAS_VALUE
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75

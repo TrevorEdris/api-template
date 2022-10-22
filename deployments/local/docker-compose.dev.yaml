@@ -16,9 +16,6 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    networks:
-      local-network:
-        ipv4_address: 172.10.0.2
 
   localstack:
     container_name: localstack
@@ -36,9 +33,6 @@ services:
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-    networks:
-      local-network:
-        ipv4_address: 172.10.0.3
 
   dynamodb-admin:
     image: aaronshaf/dynamodb-admin
@@ -50,9 +44,6 @@ services:
       AWS_ACCESS_KEY_ID: local
       AWS_SECRET_ACCESS_KEY: local
       AWS_REGION: us-east-1
-    networks:
-      local-network:
-        ipv4_address: 172.10.0.4
 
   populate:
     image: ${IMAGEORG}/${IMAGE}-populate:latest
@@ -64,17 +55,6 @@ services:
       AWS_SECRET_ACCESS_KEY: local
       AWS_REGION: us-east-1
       ITEM_TABLE: items
-      RECORD_COUNT: 175
+      RECORD_COUNT: 5
     depends_on:
       - localstack
-    networks:
-      local-network:
-        ipv4_address: 172.10.0.5
-
-networks:
-  local-network:
-    name: "local-network"
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.10.0.0/16

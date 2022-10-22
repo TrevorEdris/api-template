@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 
 	"github.com/TrevorEdris/api-template/app/config"
-	"github.com/TrevorEdris/api-template/app/model/item"
+	"github.com/TrevorEdris/api-template/app/domain"
 )
 
 type (
@@ -35,31 +35,31 @@ func NewItemRepo(cfg *config.Config, driver DynamodbClient) *ItemRepo {
 }
 
 // Get retrieves the item identified by the specified id.
-func (r *ItemRepo) Get(ctx context.Context, id string) (item.Model, error) {
+func (r *ItemRepo) Get(ctx context.Context, id string) (domain.Item, error) {
 	params := &dynamodb.GetItemInput{
 		Key:       map[string]types.AttributeValue{"id": &types.AttributeValueMemberS{Value: id}},
 		TableName: aws.String(r.table),
 	}
 	result, err := r.storage.GetItem(ctx, params)
 	if err != nil {
-		return item.Model{}, fmt.Errorf("failed to GetItem: %w", err)
+		return domain.Item{}, fmt.Errorf("failed to GetItem: %w", err)
 	}
 	if result.Item == nil {
-		return item.Model{}, item.ErrItemNotFound
+		return domain.Item{}, domain.ErrItemNotFound
 	}
 	var rec ddbItemModel
 	if err = attributevalue.UnmarshalMap(result.Item, &rec); err != nil {
-		return item.Model{}, fmt.Errorf("failed to UnmarshalMap: %w", err)
+		return domain.Item{}, fmt.Errorf("failed to UnmarshalMap: %w", err)
 	}
 	return r.ddbToModel(rec), nil
 }
 
 // Create creates a new item with the properties of the given item model.
-func (r *ItemRepo) Create(ctx context.Context, it item.Model) (item.Model, error) {
+func (r *ItemRepo) Create(ctx context.Context, it domain.Item) (domain.Item, error) {
 	it.ID = "some_unique_key"
 	marshaled, err := attributevalue.MarshalMap(r.modelToDDB(it))
 	if err != nil {
-		return item.Model{}, fmt.Errorf("failed to Marshal item: %w", err)
+		return domain.Item{}, fmt.Errorf("failed to Marshal item: %w", err)
 	}
 	params := &dynamodb.PutItemInput{
 		TableName: aws.String(r.table),
@@ -67,16 +67,16 @@ func (r *ItemRepo) Create(ctx context.Context, it item.Model) (item.Model, error
 	}
 	_, err = r.storage.PutItem(ctx, params)
 	if err != nil {
-		return item.Model{}, fmt.Errorf("failed to PutItem: %w", err)
+		return domain.Item{}, fmt.Errorf("failed to PutItem: %w", err)
 	}
 	return it, nil
 }
 
 // Create updates the fields of the item identified by id to match the fields of the given item model.
-func (r *ItemRepo) Update(ctx context.Context, id string, updates item.Model) (item.Model, error) {
+func (r *ItemRepo) Update(ctx context.Context, id string, updates domain.Item) (domain.Item, error) {
 	baseItem, err := r.Get(ctx, id)
 	if err != nil {
-		return item.Model{}, fmt.Errorf("failed to retrieve item for updates: %w", err)
+		return domain.Item{}, fmt.Errorf("failed to retrieve item for updates: %w", err)
 	}
 	baseItem.Update(updates)
 
@@ -94,7 +94,7 @@ func (r *ItemRepo) Update(ctx context.Context, id string, updates item.Model) (i
 	}
 	_, err = r.storage.UpdateItem(ctx, params)
 	if err != nil {
-		return item.Model{}, fmt.Errorf("failed to UpdateItem: %w", err)
+		return domain.Item{}, fmt.Errorf("failed to UpdateItem: %w", err)
 	}
 	return updates, nil
 }
@@ -112,11 +112,11 @@ func (r *ItemRepo) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *ItemRepo) ddbToModel(rec ddbItemModel) item.Model {
-	return item.New(rec.Id, rec.Name, rec.Description, rec.Price)
+func (r *ItemRepo) ddbToModel(rec ddbItemModel) domain.Item {
+	return domain.NewItem(rec.Id, rec.Name, rec.Description, rec.Price)
 }
 
-func (r *ItemRepo) modelToDDB(it item.Model) ddbItemModel {
+func (r *ItemRepo) modelToDDB(it domain.Item) ddbItemModel {
 	return ddbItemModel{
 		Id:          it.ID,
 		Name:        it.Name,

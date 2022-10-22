@@ -33,5 +33,4 @@ kubectl --namespace="$namespace" create secret generic some-secret-file \
     | kubectl --namespace="$namespace" apply -f -
 
 echo "Applying yaml files"
-kubectl --namespace="$namespace" apply -f kube/hpa.yaml
-kubectl --namespace="$namespace" apply -f kube/deployment.yaml
+kubectl --namespace="$namespace" apply -f kube/

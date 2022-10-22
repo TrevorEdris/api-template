@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/TrevorEdris/api-template/app/model/item"
+	"github.com/TrevorEdris/api-template/app/domain"
 )
 
 type (
@@ -22,17 +22,17 @@ func NewItemRepo() *ItemRepo {
 }
 
 // Get retrieves the item identified by the specified id.
-func (r *ItemRepo) Get(ctx context.Context, id string) (item.Model, error) {
+func (r *ItemRepo) Get(ctx context.Context, id string) (domain.Item, error) {
 	tmp, exists := r.storage.Load(id)
-	it := tmp.(item.Model)
+	it := tmp.(domain.Item)
 	if !exists {
-		return item.Model{}, item.ErrItemNotFound
+		return domain.Item{}, domain.ErrItemNotFound
 	}
 	return it, nil
 }
 
 // Create creates a new item with the properties of the given item model.
-func (r *ItemRepo) Create(ctx context.Context, it item.Model) (item.Model, error) {
+func (r *ItemRepo) Create(ctx context.Context, it domain.Item) (domain.Item, error) {
 	id := "some_unique_id"
 	it.ID = id
 	r.storage.Store(id, it)
@@ -40,11 +40,11 @@ func (r *ItemRepo) Create(ctx context.Context, it item.Model) (item.Model, error
 }
 
 // Create updates the fields of the item identified by id to match the fields of the given item model.
-func (r *ItemRepo) Update(ctx context.Context, id string, updates item.Model) (item.Model, error) {
+func (r *ItemRepo) Update(ctx context.Context, id string, updates domain.Item) (domain.Item, error) {
 	tmp, exists := r.storage.Load(id)
-	it := tmp.(item.Model)
+	it := tmp.(domain.Item)
 	if !exists {
-		return item.Model{}, item.ErrItemNotFound
+		return domain.Item{}, domain.ErrItemNotFound
 	}
 
 	// Apply updates to the item here
@@ -66,7 +66,7 @@ func (r *ItemRepo) Update(ctx context.Context, id string, updates item.Model) (i
 func (r *ItemRepo) Delete(ctx context.Context, id string) error {
 	_, exists := r.storage.LoadAndDelete(id)
 	if !exists {
-		return item.ErrItemNotFound
+		return domain.ErrItemNotFound
 	}
 	return nil
 }
