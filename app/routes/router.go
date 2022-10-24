@@ -2,7 +2,9 @@ package routes
 
 import (
 	"net/http"
+	"strings"
 
+	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	echomw "github.com/labstack/echo/v4/middleware"
 
@@ -25,7 +27,7 @@ func BuildRouter(c *services.Container) {
 		echomw.RemoveTrailingSlashWithConfig(echomw.TrailingSlashConfig{
 			RedirectCode: http.StatusMovedPermanently,
 		}),
-		echomw.Recover(),
+		//echomw.Recover(),
 		echomw.Secure(),
 		echomw.RequestID(),
 		echomw.Gzip(),
@@ -39,9 +41,11 @@ func BuildRouter(c *services.Container) {
 
 	defaultRoutes(c, g, ctr)
 
-	// Create a group of routes where the json content type is enforced
-	itemGroup := g.Group("/item", middleware.EnforceContentType(middleware.JSON))
+	itemGroup := g.Group("/items")
 	itemRoutes(c, itemGroup, ctr)
+
+	p := prometheus.NewPrometheus(strings.ReplaceAll(c.Config.App.Name, "-", "_"), nil)
+	p.Use(c.Web)
 }
 
 // TODO: Add /health, /ready
@@ -58,8 +62,11 @@ func defaultRoutes(c *services.Container, g *echo.Group, ctr controller.Controll
 // GET http://localhost:8080/item/1234 --> maps to the item.Get function.
 func itemRoutes(c *services.Container, g *echo.Group, ctr controller.Controller) {
 	item := Item{Controller: ctr}
+
+	// Create a group of routes where the json content type is enforced
+	requireJSON := g.Group("", middleware.EnforceContentType(middleware.JSON))
 	g.GET("/:id", item.Get).Name = "itemget"
-	g.POST("", item.Post).Name = "itempost"
-	g.PUT("/:id", item.Put).Name = "itemput"
 	g.DELETE("/:id", item.Delete).Name = "itemdelete"
+	requireJSON.POST("", item.Post).Name = "itempost"
+	requireJSON.PUT("/:id", item.Put).Name = "itemput"
 }

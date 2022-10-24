@@ -24,10 +24,10 @@ func NewItemRepo() *ItemRepo {
 // Get retrieves the item identified by the specified id.
 func (r *ItemRepo) Get(ctx context.Context, id string) (domain.Item, error) {
 	tmp, exists := r.storage.Load(id)
-	it := tmp.(domain.Item)
 	if !exists {
 		return domain.Item{}, domain.ErrItemNotFound
 	}
+	it := tmp.(domain.Item)
 	return it, nil
 }
 
@@ -42,10 +42,10 @@ func (r *ItemRepo) Create(ctx context.Context, it domain.Item) (domain.Item, err
 // Create updates the fields of the item identified by id to match the fields of the given item model.
 func (r *ItemRepo) Update(ctx context.Context, id string, updates domain.Item) (domain.Item, error) {
 	tmp, exists := r.storage.Load(id)
-	it := tmp.(domain.Item)
 	if !exists {
 		return domain.Item{}, domain.ErrItemNotFound
 	}
+	it := tmp.(domain.Item)
 
 	// Apply updates to the item here
 	if updates.Name != "" {

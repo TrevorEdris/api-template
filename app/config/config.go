@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"errors"
 	"os"
 	"time"
 
@@ -120,6 +121,20 @@ func New() (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func (c *Config) Validate() error {
+	// Ensure the appropriate values are set based on the storage
+	switch c.App.Storage {
+	case StorageDynamoDB:
+		if c.AWS.AccessKeyID == "" || c.AWS.Secret == "" || c.AWS.Region == "" {
+			return errors.New("missing required AWS configuration")
+		} else if c.DynamoDB.ItemTable == "" {
+			return errors.New("missing required DynamoDB configuration")
+		}
+	default:
+	}
+	return nil
 }
 
 func loadAWSCfg(ctx context.Context, cfg Config) (aws.Config, error) {

@@ -17,16 +17,16 @@ type (
 
 	// ItemPostRequest defines the HTTP request body for the POST handler.
 	itemPostRequest struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float64 `json:"price"`
+		Name        string  `json:"name" validate:"required"`
+		Description string  `json:"description" validate:"required"`
+		Price       float64 `json:"price" validate:"required"`
 	}
 
 	// ItemPutRequest defines the HTTP request body for the PUT handler.
 	itemPutRequest struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float64 `json:"price"`
+		Name        string  `json:"name" validate:"required"`
+		Description string  `json:"description" validate:"required"`
+		Price       float64 `json:"price" validate:"required"`
 	}
 
 	// ItemJSONResponse defines the HTTP response body of a request which returns an domain.Item.

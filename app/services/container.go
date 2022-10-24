@@ -51,6 +51,10 @@ func (c *Container) initConfig() {
 	if err != nil {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
+	err = cfg.Validate()
+	if err != nil {
+		panic(fmt.Errorf("invalid configuration detected: %w", err))
+	}
 	c.Config = &cfg
 }
 
