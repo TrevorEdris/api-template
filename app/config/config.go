@@ -1,11 +1,6 @@
 package config
 
 import (
-<<<<<<< HEAD
-	"context"
-	"errors"
-=======
->>>>>>> 11540d0... Refactor to Controller/Service/Repo pattern
 	"os"
 	"time"
 
@@ -78,33 +73,5 @@ func New() (*Config, error) {
 
 func (c *Config) Validate() error {
 	// Ensure the appropriate values are set based on the storage
-	switch c.App.Storage {
-	case StorageDynamoDB:
-		if c.AWS.AccessKeyID == "" || c.AWS.Secret == "" || c.AWS.Region == "" {
-			return errors.New("missing required AWS configuration")
-		} else if c.DynamoDB.ItemTable == "" {
-			return errors.New("missing required DynamoDB configuration")
-		}
-	default:
-	}
 	return nil
-}
-
-func loadAWSCfg(ctx context.Context, cfg Config) (aws.Config, error) {
-	customResolver := aws.EndpointResolverWithOptions(
-		aws.EndpointResolverWithOptionsFunc(
-			func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-				if cfg.AWS.Endpoint != "" {
-					return aws.Endpoint{
-						URL:           cfg.AWS.Endpoint,
-						SigningRegion: region,
-						Source:        aws.EndpointSourceCustom,
-					}, nil
-				}
-				// returning EndpointNotFoundError will allow the service to fallback to its default resolution
-				return aws.Endpoint{}, &aws.EndpointNotFoundError{}
-			},
-		),
-	)
-	return awsconfig.LoadDefaultConfig(ctx, awsconfig.WithEndpointResolverWithOptions(customResolver))
 }
