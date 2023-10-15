@@ -77,7 +77,6 @@ func New() (*Config, error) {
 }
 
 func (c *Config) Validate() error {
-<<<<<<< HEAD
 	// Ensure the appropriate values are set based on the storage
 	switch c.App.Storage {
 	case StorageDynamoDB:
@@ -108,7 +107,4 @@ func loadAWSCfg(ctx context.Context, cfg Config) (aws.Config, error) {
 		),
 	)
 	return awsconfig.LoadDefaultConfig(ctx, awsconfig.WithEndpointResolverWithOptions(customResolver))
-=======
-	return nil
->>>>>>> 11540d0... Refactor to Controller/Service/Repo pattern
 }
